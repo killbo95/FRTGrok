@@ -1,4 +1,5 @@
 [app]
+android.accept_sdk_license = True
 title = FRT Face Detection
 package.name = frtface
 package.domain = org.school.frt
