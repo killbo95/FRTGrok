@@ -29,7 +29,6 @@ jobs:
       run: pip install buildozer cython
 
     - name: Build the APK
-      working-directory: FRT_APK_Project
       env:
         APP_ANDROID_ACCEPT_SDK_LICENSE: 1
         BUILDOZER_WARN_ON_ROOT: 0
@@ -39,4 +38,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: FRT-Face-Detection-APK
-        path: FRT_APK_Project/bin/*.apk
+        path: bin/*.apk
