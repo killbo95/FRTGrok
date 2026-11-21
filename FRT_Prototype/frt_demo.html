@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRT Student Prototype - Face Detection Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        h1 { color: #2c3e50; }
+        #video, #canvas { width: 100%; max-width: 640px; border: 2px solid #3498db; border-radius: 8px; }
+        button { background: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #2980b9; }
+        .info { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Facial Recognition Technology (FRT)</h1>
+    <h2>Student Innovation Competition Prototype - Grades 9-10</h2>
+    
+    <div class="warning">
+        <strong>Privacy Notice:</strong> Only demonstrate with people who have given informed consent. 
+        Face data is sensitive biometric information. This is an educational demo only.
+    </div>
+    
+    <div class="info">
+        <h3>What this demonstrates:</h3>
+        <ul>
+            <li><strong>Face Detection:</strong> Using browser-based computer vision (face-api.js)</li>
+            <li><strong>Real-time Processing:</strong> Detects faces from your device camera</li>
+            <li><strong>Responsible Design:</strong> Local processing, no data uploaded</li>
+        </ul>
+    </div>
+    
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    
+    <div>
+        <button id="startBtn">Start Face Detection</button>
+        <button id="stopBtn">Stop</button>
+    </div>
+    
+    <div id="status" class="info">Click "Start Face Detection" to begin (camera permission required)</div>
+    
+    <div class="info">
+        <h3>Technology Behind It</h3>
+        <p>This demo uses <strong>face-api.js</strong>, a JavaScript library that implements face detection models (based on Tiny Face Detector or SSD MobileNet) that run entirely in the browser.</p>
+        <p><strong>How it works:</strong></p>
+        <ol>
+            <li>Camera captures video frames</li>
+            <li>Each frame is analyzed by a neural network trained to detect faces</li>
+            <li>Bounding boxes are drawn around detected faces</li>
+            <li>All processing happens locally on your device</li>
+        </ol>
+        <p><strong>Strengths:</strong> Works on any device with a browser, no installation needed, privacy-preserving (local processing).</p>
+        <p><strong>Limitations:</strong> Accuracy depends on lighting and face angle; this demo focuses on detection (recognition requires additional enrollment and matching).</p>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const status = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        
+        let stream = null;
+        let detecting = false;
+        
+        async function startDetection() {
+            try {
+                status.textContent = 'Loading face detection model...';
+                await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model/');
+                // Fallback model load
+                await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+            } catch(e) {
+                // Use default CDN models
+                await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+            }
+            
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            detecting = true;
+            status.textContent = 'Detecting faces... (consent required for demonstration)';
+            detectFaces();
+        }
+        
+        async function detectFaces() {
+            if (!detecting) return;
+            
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            // Draw boxes
+            detections.forEach(det => {
+                const box = det.box;
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(box.x, box.y, box.width, box.height);
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '16px Arial';
+                ctx.fillText('Face', box.x, box.y - 5);
+            });
+            
+            status.textContent = `Faces detected: ${detections.length}`;
+            
+            if (detecting) {
+                requestAnimationFrame(detectFaces);
+            }
+        }
+        
+        function stopDetection() {
+            detecting = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            status.textContent = 'Stopped. Camera released.';
+        }
+        
+        startBtn.onclick = startDetection;
+        stopBtn.onclick = stopDetection;
+    </script>
+</body>
+</html>
