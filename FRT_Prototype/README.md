@@ -1,90 +1,46 @@
-# FRT Student Innovation Competition - Face Recognition Prototype
+# FRT Student Innovation Competition
+## Android Face Detection Prototype (APK)
 
-## Overview
-This is a complete facial recognition system prototype designed for the Grades 9-10 Facial Recognition Technology (FRT) Student Innovation Competition.
+**Grades 9–10 | Facial Recognition Technology**
 
-The system demonstrates:
-- **Face Detection**: Using Haar Cascade classifiers
-- **Face Recognition**: Using LBPH (Local Binary Patterns Histograms) algorithm
-- **Enrollment**: Capturing and storing face samples from consenting individuals
-- **Real-time Recognition**: Identifying enrolled people from a live camera feed
+### What this project is
+A working Android app that detects faces in real time using the phone’s camera.  
+It is designed to be built into an **APK** with Buildozer (Python-for-Android).
 
-## Technology Explained
+### How the system works
+1. **Camera** captures live video from the device.
+2. **Haar Cascade classifier** scans each frame for faces.
+3. **Bounding boxes** are drawn around detected faces.
+4. Everything runs **on the device** — no internet or cloud required.
 
-### How Face Detection Works
-Haar Cascade is a machine learning-based approach that uses a cascade of simple features (edge, line, rectangle features) to detect faces. The OpenCV implementation includes a pre-trained model for frontal faces.
+### Tools used
+- **Kivy** – mobile user interface
+- **OpenCV** – face detection (Haar Cascade)
+- **Buildozer** – packages the app into an Android APK
 
-### How Face Recognition Works
-LBPH (Local Binary Patterns Histograms) extracts texture features from face images. It divides the face into regions, computes local binary patterns, and creates histograms. These histograms are compared to identify matches. Lower confidence scores indicate better matches.
+### Strengths
+- Works offline (good for privacy)
+- Real-time on a normal phone
+- Simple and explainable algorithm
+- Clear visual feedback (green boxes + face count)
 
-### Tools Used
-- **OpenCV**: Computer vision library for detection and recognition
-- **Python**: Programming language
-- **NumPy**: Numerical operations
-- Webcam: For live demonstration
+### Limitations
+- Works best with frontal faces and good lighting
+- Detection only (not identification)
+- Accuracy drops with side angles, masks, or very low light
+- Requires camera permission
 
-## How to Run
+### Privacy & Responsible Design
+- Only demonstrate with people who have given clear consent
+- No face images are saved or uploaded
+- All processing stays on the phone
+- Suitable for a controlled school demonstration
+- A school-deployed version would need extra review and approval
 
-### Prerequisites
+### How to build the APK
 ```bash
-pip install opencv-python opencv-contrib-python numpy
+cd FRT_Prototype
+buildozer android debug
 ```
 
-### Running the Demo
-```bash
-python face_recognition_demo.py
-```
-
-Follow the menu:
-1. Enroll people (get consent first!)
-2. Train the model
-3. Run live recognition
-
-## Project Requirements Alignment
-
-### Working Prototype
-✅ Complete face detection and recognition system
-
-### Clear Explanation of Approach
-- Haar Cascade for detection (classical computer vision)
-- LBPH for recognition (texture-based matching)
-- All code is commented and understandable
-
-### Demonstration
-- Live webcam demo with consenting volunteers
-- Or use test images
-
-### Presentation Points
-**Purpose**: Educational demonstration of biometric face recognition technology for school community awareness.
-
-**Strengths**:
-- Works offline (privacy-friendly)
-- Simple and understandable algorithm
-- Real-time performance on standard hardware
-- No cloud dependency
-
-**Limitations**:
-- Requires good lighting and frontal faces
-- Accuracy decreases with different angles, expressions, or aging
-- Needs multiple training samples per person
-- Can have false positives/negatives
-
-**Possible Errors**:
-- False rejection (known person marked as unknown)
-- False acceptance (unknown person matched to someone)
-- Detection failure in poor lighting or side profiles
-
-### Privacy and Security
-- Only uses faces from people who knowingly agreed to participate
-- Data stored locally only
-- No transmission of biometric data
-- Clear consent process before enrollment
-- Model and images can be deleted after demo
-- School deployment would require additional review and approval
-
-## Competition Notes
-- AI tools were used to assist with code structure and documentation
-- The student understands the algorithms and can explain every component
-- This is an original educational implementation of standard techniques
-
-## Design Responsibly. Create Independently. Explain Confidently.
+The finished APK will be in the `bin/` folder.
