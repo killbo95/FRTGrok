@@ -9,34 +9,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install system dependencies
+    - name: Prepare main.py
       run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip \
-          autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
-          cmake libffi-dev libssl-dev
-
-    - name: Install Buildozer
-      run: pip install buildozer cython
-
-    - name: Accept Android SDK licenses and build
-      working-directory: FRT_Prototype
-      env:
-        APP_ANDROID_ACCEPT_SDK_LICENSE: 1
-        BUILDOZER_WARN_ON_ROOT: 0
-      run: |
+        cd FRT_Prototype
         cp kivy_face_detection.py main.py
-        yes | buildozer android debug
+
+    - name: Build with Buildozer
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
+      with:
+        command: buildozer android debug
+        workdir: FRT_Prototype
+        buildozer_version: stable
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: FRT-Prototype-APK
-        path: FRT_Prototype/bin/*.apk
+        path: ${{ steps.buildozer.outputs.filename }}
