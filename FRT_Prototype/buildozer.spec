@@ -6,7 +6,7 @@ package.domain = org.school.frt
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
-requirements = python3==3.11.9,hostpython3==3.11.9,kivy,opencv,numpy==v1.26.4
+requirements = python3==3.11.9,hostpython3==3.11.9,kivy,opencv,numpy==v2.3.0
 orientation = portrait
 fullscreen = 0
 android.permissions = CAMERA
